@@ -2,25 +2,29 @@ const inq = require("inquirer");
 
 let runApp = true;
 
-inq 
-    .prompt([
-        {
-            name: "operation",
-            message: "What Operation would you like to perform?",
-            type: "list",
-            choices: ["Get Records", "Add Record", "Exit"]
-        },
-        {
-            name: "recordType",
-            message: "What Record Type Are You Trying to Access?",
-            type: "list",
-            choices: ["Employee", "Department", "Role", "Exit"],
-            when: (ans) => {
-                return ans.operation != "Exit"
-            }
-        }
-    ])
-    .then((ans) => {
+mainMenu();
+
+async function mainMenu() {
+    while (runApp) {
+        let ans = await inq
+            .prompt([
+                {
+                    name: "operation",
+                    message: "What Operation would you like to perform?",
+                    type: "list",
+                    choices: ["Get Records", "Add Record", "Exit"]
+                },
+                {
+                    name: "recordType",
+                    message: "What Record Type Are You Trying to Access?",
+                    type: "list",
+                    choices: ["Employee", "Department", "Role", "Exit"],
+                    when: (ans) => {
+                        return ans.operation != "Exit"
+                    }
+                }
+            ]);
+
         if (ans.operation === "Exit" || ans.recordType === "Exit") {
             runApp = false;
             return;
@@ -39,7 +43,7 @@ inq
                 case "Role":
                     addRole();
                     break;
-            
+
                 default:
                     console.log("Unrecoginized Record Type");
                     runApp = false;
@@ -58,18 +62,20 @@ inq
                 case "Role":
                     displayRoles();
                     break;
-            
+
                 default:
                     console.log("Unrecoginized Record Type");
                     runApp = false;
                     break;
             }
         }
-    });
+    }
+}
 
-function addEmployeePrompt() {};
-function addDepartmentPrompt() {};
-function addRole() {};
-function displayEmployees() {};
-function displayDepartments() {};
-function displayRoles() {};
+function addEmployeePrompt() {
+ };
+function addDepartmentPrompt() { };
+function addRole() { };
+function displayEmployees() { };
+function displayDepartments() { };
+function displayRoles() { };
