@@ -33,15 +33,15 @@ async function mainMenu() {
         if (ans.operation === "Add Record") {
             switch (ans.recordType) {
                 case "Employee":
-                    addEmployeePrompt()
+                    await addEmployeePrompt()
                     break;
 
                 case "Department":
-                    addDepartmentPrompt();
+                    await addDepartmentPrompt();
                     break;
 
                 case "Role":
-                    addRole();
+                    await addRole();
                     break;
 
                 default:
@@ -72,10 +72,73 @@ async function mainMenu() {
     }
 }
 
-function addEmployeePrompt() {
+async function addEmployeePrompt() {
+    let roles = getRoleChoices();
+    let managers = getManagerChoices();
+    let ans = await inq
+        .prompt([
+            {
+                name: "firstName",
+                message: "Enter first name:",
+                type: "input",
+                validate: (res) => {
+                    return validateFieldLength(res, 1, 30);
+                }
+            },
+            {
+                name: "lastName",
+                message: "Enter last name:",
+                type: "input",
+                validate: (res) => {
+                    return validateFieldLength(res, 1, 30);
+                }
+            },
+            {
+                name: "role",
+                message: "Select Role:",
+                type: "list",
+                choices: roles
+            },
+            {
+                name: "manager",
+                message: "Select Manager:",
+                type: "list",
+                choices: managers
+            }
+        ]);
+
+    console.log(`New Employee Created: ${ans.firstName} ${ans.lastName} in ${ans.role} role reporting to ${ans.manager}`)
  };
-function addDepartmentPrompt() { };
-function addRole() { };
+async function addDepartmentPrompt() { };
+async function addRole() { };
 function displayEmployees() { };
 function displayDepartments() { };
 function displayRoles() { };
+
+function validateFieldLength(res, min, max) {
+    if (res.length >= min && res.length <= max) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+function getRoleChoices(){
+    return [{
+        value: 1,
+        name: "Manager"
+    },{
+        value: 2,
+        name: "Employee"
+    }]
+}
+
+function getManagerChoices() {
+    return [{
+        value: 1,
+        name: "Jack Johnson"
+    },{
+        value: 2,
+        name: "Ted Lasso"
+    }]
+}
