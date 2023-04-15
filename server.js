@@ -125,10 +125,48 @@ async function addDepartmentPrompt() {
 
     console.log(`Created new department: ${ans.name}`);
 };
-async function addRole() { };
+async function addRole() {
+    let departments = getDepartmentChoices();
+    let ans = await inq
+        .prompt([
+            {
+                name: "title",
+                message: "Enter title:",
+                type: "input",
+                validate: (res) => {
+                    return validateFieldLength(res, 1, 30);
+                }
+            },
+            {
+                name: "salary",
+                message: "Enter salary:",
+                type: "input",
+                validate: (res) => {
+                    return validateNumberValue(res, 0, 250000);
+                }
+            }, {
+                name: "department",
+                message: "Select Department",
+                type: "list",
+                choices: departments
+            }
+        ])
+
+    console.log(`New role ${ans.title} in the ${ans.department} with a salary of ${ans.salary}.`)
+ };
 function displayEmployees() { };
 function displayDepartments() { };
 function displayRoles() { };
+
+function validateNumberValue(num, min, max) {
+    if(num === "" || isNaN(num)){
+        return false;
+    } else if(num >= min && num <= max){
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function validateFieldLength(res, min, max) {
     if (res.length >= min && res.length <= max) {
@@ -137,6 +175,16 @@ function validateFieldLength(res, min, max) {
         return false;
     }
 };
+
+function getDepartmentChoices(){
+    return [{
+        value: 1,
+        name: "IT"
+    },{
+        value: 2,
+        name: "Trading"
+    }]
+}
 
 function getRoleChoices(){
     return [{
