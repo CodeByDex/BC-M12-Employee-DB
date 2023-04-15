@@ -1,0 +1,28 @@
+{
+  "name": "bc-m12-employee-db",
+  "version": "1.0.0",
+  "description": "node.js based console application that allows for basic IO on a mysql db backend. ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/CodeByDex/BC-M12-Employee-DB.git"
+  },
+  "keywords": [
+    "node.js",
+    "javascript",
+    "mysql"
+  ],
+  "author": "CodeByDex",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/CodeByDex/BC-M12-Employee-DB/issues"
+  },
+  "homepage": "https://github.com/CodeByDex/BC-M12-Employee-DB#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.2.0"
+  }
+}
