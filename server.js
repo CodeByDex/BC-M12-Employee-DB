@@ -75,6 +75,7 @@ async function mainMenu() {
 async function addEmployeePrompt() {
     let roles = getRoleChoices();
     let managers = getManagerChoices();
+
     let ans = await inq
         .prompt([
             {
@@ -109,7 +110,21 @@ async function addEmployeePrompt() {
 
     console.log(`New Employee Created: ${ans.firstName} ${ans.lastName} in ${ans.role} role reporting to ${ans.manager}`)
  };
-async function addDepartmentPrompt() { };
+async function addDepartmentPrompt() { 
+    let ans = await inq
+        .prompt([
+            {
+                name: "name",
+                message: "Enter name of department",
+                type: "input",
+                validate: (res) => {
+                    return validateFieldLength(res, 1, 30);
+                }
+            }
+        ]);
+
+    console.log(`Created new department: ${ans.name}`);
+};
 async function addRole() { };
 function displayEmployees() { };
 function displayDepartments() { };
