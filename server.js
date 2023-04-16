@@ -3,6 +3,8 @@ const io = require("./lib/IO");
 
 let runApp = true;
 
+mainMenu();
+
 async function mainMenu() {
     while (runApp) {
         let ans = await inq
@@ -109,6 +111,7 @@ async function addEmployeePrompt() {
 
     console.log(`New Employee Created: ${ans.firstName} ${ans.lastName} in ${ans.role} role reporting to ${ans.manager}`)
  };
+ 
 async function addDepartmentPrompt() { 
     let ans = await inq
         .prompt([
@@ -122,8 +125,12 @@ async function addDepartmentPrompt() {
             }
         ]);
 
-    console.log(`Created new department: ${ans.name}`);
+
+    let newID = await io.AddDepartment(ans.name);
+
+    console.log(`New Department ${ans.name} with ID: ${newID} created.`)
 };
+
 async function addRole() {
     let departments = getDepartmentChoices();
     let ans = await inq
