@@ -340,10 +340,23 @@ async function AddRecord(ans) {
 
 async function displayEmployees() {
     let res = await io.GetEmployees();
+    let roles = await io.GetRoles();
 
-    res = res.map(emp => ({ "Employee ID": emp.ID, "First Name": emp.FirstName, "Last Name": emp.LastName, "Role ID": emp.RoleID, "Manager ID": emp.ManagerID }));
+    res = res.map(emp => ({ 
+        "Employee ID": emp.ID, 
+        "First Name": emp.FirstName, 
+        "Last Name": emp.LastName, 
+        "Title": roles.find(x => x.ID === emp.RoleID).Title, 
+        "Salary": roles.find(x => x.ID === emp.RoleID).Salary,
+        "Manager": emp.ManagerID ? getManagerName(emp) : "N/A"
+    }));
 
     console.table(res);
+
+    function getManagerName(emp) {
+        let man = res.find(x => x.ID === emp.ManagerID);
+        return man.FirstName + " " + man.LastName;
+    }
 };
 
 async function displayDepartments() {
@@ -356,11 +369,12 @@ async function displayDepartments() {
 
 async function displayRoles() {
     let res = await io.GetRoles();
+    let dep = await io.GetDepartments();
 
-    res = res.map(role => ({ "Role ID": role.ID, "Title": role.Title, "Salary": role.Salary, "Department ID": role.DepartmentID }));
+    res = res.map(role => ({ "Role ID": role.ID, "Title": role.Title, "Salary": role.Salary, Department: dep.find(x => x.ID === role.DepartmentID).Name }));
 
     console.table(res);
-}
+};
 
 /*************************
  * Choice List Functions
