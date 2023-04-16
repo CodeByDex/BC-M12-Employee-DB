@@ -29,6 +29,7 @@ async function mainMenu() {
             }
         } catch (ex) {
             console.log("An error has occured");
+            console.error(ex);
             runApp = false;
         }
     }
@@ -135,7 +136,38 @@ async function reusableEmployeePrompt(currFirstName = null, currLastName = null,
 }
 
 async function addDepartmentPrompt() {
+    let ans = await resuableDepartmentPrompt();
+
+    let newID = await io.AddDepartment(ans.name);
+
+    console.log(`New Department ${ans.name} with ID: ${newID} created.`)
+};
+
+async function updateDepartmentPrompt() {
+    let departments = await io.GetDepartments();
+    let choices = departments.map(el => ({value: el.ID, name: el.Name}));
+
     let ans = await inq
+        .prompt([
+            {
+                name: "dept",
+                message: "Select Department to update:",
+                type: "list",
+                choices: choices
+            }
+        ]);
+
+    let selectedDept = departments.find(el => el.ID === ans.dept);
+
+    let updatedDept = await resuableDepartmentPrompt(selectedDept.Name);
+
+    let newID = await io.UpdateDepartment(ans.dept, updatedDept.name);
+
+    console.log(`New Department ${ans.name} with ID: ${newID} created.`);
+};
+
+async function resuableDepartmentPrompt(currName = null) {
+    return await inq
         .prompt([
             {
                 name: "name",
@@ -143,18 +175,47 @@ async function addDepartmentPrompt() {
                 type: "input",
                 validate: (res) => {
                     return val.validateFieldLength(res, 1, 30);
-                }
+                },
+                default: currName
+            }
+        ]);
+}
+
+async function addRolePrompt() {
+    let ans = await reusableRolePrompt();
+
+    let newID = await io.AddRole(ans.title, ans.salary, ans.department);
+
+    console.log(`New role ${ans.title} in the ${ans.department} with a salary of ${ans.salary} with an ID of ${newID}.`);
+};
+
+async function updateRolePrompt(){
+    let roles = await io.GetRoles();
+    let choices = roles.map(role => ({ value: role.ID, name: role.Title }));
+
+    let ans = await inq
+        .prompt([
+            {
+                name: "role",
+                message: "Select Role to update: ",
+                type: "list",
+                choices: choices
             }
         ]);
 
+    let selectedRole = roles.find(el => el.ID === ans.role);
 
-    let newID = await io.AddDepartment(ans.name);
+    let updatedEmp = await reusableRolePrompt(selectedRole.Title, selectedRole.Salary, selectedRole.DepartmentID);
 
-    console.log(`New Department ${ans.name} with ID: ${newID} created.`)
+    let res = await io.UpdateRole(ans.role, updatedEmp.title, updatedEmp.salary, updatedEmp.department);
+
+    console.log(`Updated ${res} row(s)`);
 };
 
-async function addRolePrompt() {
+async function reusableRolePrompt(currTitle = null, currSalary = null, currDept = null) {
     let departments = await getDepartmentChoices();
+    let currDeptInd = departments.findIndex(el => el.value === currDept);
+
     let ans = await inq
         .prompt([
             {
@@ -163,7 +224,8 @@ async function addRolePrompt() {
                 type: "input",
                 validate: (res) => {
                     return val.validateFieldLength(res, 1, 30);
-                }
+                },
+                default: currTitle
             },
             {
                 name: "salary",
@@ -171,19 +233,18 @@ async function addRolePrompt() {
                 type: "input",
                 validate: (res) => {
                     return val.validateNumberValue(res, 0, 250000);
-                }
+                },
+                default: currSalary
             }, {
                 name: "department",
                 message: "Select Department",
                 type: "list",
-                choices: departments
+                choices: departments,
+                default: currDeptInd
             }
-        ])
-
-    let newID = await io.AddRole(ans.title, ans.salary, ans.department);
-
-    console.log(`New role ${ans.title} in the ${ans.department} with a salary of ${ans.salary} with an ID of ${newID}.`);
-};
+        ]);
+    return ans;
+}
 
 /********************************************
  * Sub Menu Selections
@@ -195,12 +256,12 @@ async function UpdateRecord(ans) {
             await updateEmployeePrompt();
             break;
 
-        case "Department":
-
         case "Role":
+            await updateRolePrompt()
+            break;
 
-        default:
-            console.log(`Update function not implemented for ${ans.recordType}`);
+        case "Department":
+            await updateDepartmentPrompt();
             break;
     }
 };
