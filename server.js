@@ -28,6 +28,8 @@ async function mainMenu() {
                 await UpdateRecord(ans);
             } else if (ans.operation === "Run Report") {
                 await runReportPrompt();
+            } else if (ans.operation === "Delete Record") {
+                await DeleteRecord(ans);
             }
         } catch (ex) {
             console.log("An error has occured");
@@ -47,7 +49,7 @@ async function mainMenuPrompt() {
                 name: "operation",
                 message: "What Operation would you like to perform?",
                 type: "list",
-                choices: ["Get Records", "Add Record", "Update Record", "Run Report", "Exit"]
+                choices: ["Get Records", "Add Record", "Update Record", "Run Report", "Exit", "Delete Record"]
             },
             {
                 name: "recordType",
@@ -87,13 +89,13 @@ async function runReportPrompt(){
 
 async function updateEmployeePrompt() {
     let employees = await io.GetEmployees();
-    let choices = employees.map(emp => ({ value: emp.ID, name: emp.FirstName + " " + emp.LastName }));
+    let choices = await getEmployeeChocies();
 
     let ans = await inq
         .prompt([
             {
                 name: "employee",
-                message: "Selectt Employee to update: ",
+                message: "Select Employee to update: ",
                 type: "list",
                 choices: choices
             }
@@ -107,6 +109,31 @@ async function updateEmployeePrompt() {
 
     console.log(`Updated ${res} row(s)`);
 };
+
+async function deleteEmployeePrompt() {
+    let choices = await getEmployeeChocies();
+
+    let ans = await inq
+        .prompt([
+            {
+                name: "employee",
+                message: "Select Employee to delete:",
+                type: "list",
+                choices: choices
+            }, 
+            {
+                name: "confirm",
+                message: "Confirm Delete; this cannot be undone?",
+                type: "list",
+                choices: ["No", "Yes"]
+            }
+        ]);
+
+    if (ans.confirm === "Yes") {
+        let res = await io.DeleteEmployee(ans.employee);
+        console.log(`Deleted ${res} rows(s)`);
+    }
+}
 
 async function addEmployeePrompt() {
 
@@ -334,6 +361,27 @@ async function AddRecord(ans) {
     }
 }
 
+async function DeleteRecord(ans) {
+    switch (ans.recordType) {
+        case "Employee":
+            await deleteEmployeePrompt();
+            break;
+
+        case "Department":
+            await deleteDepartmentPrompt();
+            break;
+
+        case "Role":
+            await deleteRolePrompt();
+            break;
+
+        default:
+            console.log("Unrecoginized Record Type");
+            runApp = false;
+            break;
+    }
+}
+
 /*********************************
  * Display Functions
  ********************************/
@@ -397,9 +445,13 @@ async function getRoleChoices() {
 }
 
 async function getManagerChoices() {
+    return [{ value: null, name: "N/A" }].concat(await getEmployeeChocies());
+}
+
+async function getEmployeeChocies() {
     let res = await io.GetEmployees();
 
     res = res.map(emp => ({ "value": emp.ID, "name": emp.FirstName + " " + emp.LastName }));
 
-    return [{ value: null, name: "N/A" }].concat(res);
+    return res;
 }
