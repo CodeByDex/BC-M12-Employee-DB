@@ -136,7 +136,38 @@ async function reusableEmployeePrompt(currFirstName = null, currLastName = null,
 }
 
 async function addDepartmentPrompt() {
+    let ans = await resuableDepartmentPrompt();
+
+    let newID = await io.AddDepartment(ans.name);
+
+    console.log(`New Department ${ans.name} with ID: ${newID} created.`)
+};
+
+async function updateDepartmentPrompt() {
+    let departments = await io.GetDepartments();
+    let choices = departments.map(el => ({value: el.ID, name: el.Name}));
+
     let ans = await inq
+        .prompt([
+            {
+                name: "dept",
+                message: "Select Department to update:",
+                type: "list",
+                choices: choices
+            }
+        ]);
+
+    let selectedDept = departments.find(el => el.ID === ans.dept);
+
+    let updatedDept = await resuableDepartmentPrompt(selectedDept.Name);
+
+    let newID = await io.UpdateDepartment(ans.dept, updatedDept.name);
+
+    console.log(`New Department ${ans.name} with ID: ${newID} created.`);
+};
+
+async function resuableDepartmentPrompt(currName = null) {
+    return await inq
         .prompt([
             {
                 name: "name",
@@ -144,15 +175,11 @@ async function addDepartmentPrompt() {
                 type: "input",
                 validate: (res) => {
                     return val.validateFieldLength(res, 1, 30);
-                }
+                },
+                default: currName
             }
         ]);
-
-
-    let newID = await io.AddDepartment(ans.name);
-
-    console.log(`New Department ${ans.name} with ID: ${newID} created.`)
-};
+}
 
 async function addRolePrompt() {
     let ans = await reusableRolePrompt();
@@ -234,10 +261,7 @@ async function UpdateRecord(ans) {
             break;
 
         case "Department":
-
-
-        default:
-            console.log(`Update function not implemented for ${ans.recordType}`);
+            await updateDepartmentPrompt();
             break;
     }
 };
