@@ -68,13 +68,16 @@ async function runReportPrompt(){
             name: "report",
             message: "Please select a report to run: ",
             type: "list",
-            choices: ["Employees by Manager"]
+            choices: ["Employees by Manager", "Employees by Department"]
         }]);
 
     if (ans.report === "Employees by Manager")
     {
         rep = await io.ReportEmployeesByManager()
-    }
+    } else if (ans.report === "Employees by Department")
+    {
+        rep = await io.ReportEmployeesByDepartment()
+    } 
 
     console.table(rep);
 }
