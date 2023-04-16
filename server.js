@@ -26,6 +26,8 @@ async function mainMenu() {
                 await GetRecords(ans);
             } else if (ans.operation === "Update Record") {
                 await UpdateRecord(ans);
+            } else if (ans.operation === "Run Report") {
+                await runReportPrompt();
             }
         } catch (ex) {
             console.log("An error has occured");
@@ -45,7 +47,7 @@ async function mainMenuPrompt() {
                 name: "operation",
                 message: "What Operation would you like to perform?",
                 type: "list",
-                choices: ["Get Records", "Add Record", "Update Record", "Exit"]
+                choices: ["Get Records", "Add Record", "Update Record", "Run Report", "Exit"]
             },
             {
                 name: "recordType",
@@ -53,10 +55,28 @@ async function mainMenuPrompt() {
                 type: "list",
                 choices: ["Employee", "Department", "Role", "Exit"],
                 when: (ans) => {
-                    return ans.operation != "Exit";
+                    return (ans.operation != "Exit" && ans.operation != "Run Report");
                 }
             }
         ]);
+}
+
+async function runReportPrompt(){
+    let rep;
+    let ans = await inq
+        .prompt([{
+            name: "report",
+            message: "Please select a report to run: ",
+            type: "list",
+            choices: ["Employees by Manager"]
+        }]);
+
+    if (ans.report === "Employees by Manager")
+    {
+        rep = await io.ReportEmployeesByManager()
+    }
+
+    console.table(rep);
 }
 
 async function updateEmployeePrompt() {
