@@ -1,0 +1,41 @@
+CREATE DATABASE IF NOT EXISTS Employee_DB;
+USE Employee_DB;
+
+/*****
+You will need to create your app user account manually in workbench.
+*******/
+
+CREATE TABLE IF NOT EXISTS Department (
+	ID INT AUTO_INCREMENT NOT NULL UNIQUE,
+    Name NVARCHAR(30) NOT NULL,
+    
+    PRIMARY KEY(ID)
+);
+
+-- DROP TABLE IF EXISTS Department;
+
+CREATE TABLE IF NOT EXISTS Role (
+	ID INT AUTO_INCREMENT NOT NULL UNIQUE,
+    Title NVARCHAR(30) NOT NULL,
+    Salary DECIMAL(14, 2) NOT NULL,
+    DepartmentID INT NOT NULL,
+    
+    PRIMARY KEY(ID),
+    FOREIGN KEY (DepartmentID) REFERENCES Department(ID)
+);
+
+-- DROP TABLE IF EXISTS Role;
+
+CREATE TABLE IF NOT EXISTS Employee (
+	ID INT AUTO_INCREMENT NOT NULL UNIQUE,
+    FirstName NVARCHAR(30) NOT NULL,
+    LastName NVARCHAR(30) NOT NULL,
+    RoleID INT NOT NULL,
+    ManagerID INT NULL,
+    
+    PRIMARY KEY (ID),
+    FOREIGN KEY (RoleID) REFERENCES Role(ID),
+    FOREIGN KEY (ManagerID) REFERENCES Employee(ID)
+);
+
+-- DROP TABLE IF EXISTS Employee;
