@@ -1,5 +1,6 @@
 const inq = require("inquirer");
 const io = require("./lib/IO");
+const IO = require("./lib/IO");
 require("console.table");
 
 let runApp = true;
@@ -159,7 +160,9 @@ async function addRole() {
             }
         ])
 
-    console.log(`New role ${ans.title} in the ${ans.department} with a salary of ${ans.salary}.`)
+    let newID = IO.AddRole(ans.title, ans.salary, ans.department);
+
+    console.log(`New role ${ans.title} in the ${ans.department} with a salary of ${ans.salary} with an ID of ${newID}.`);
  };
 async function displayEmployees() { };
 
@@ -171,7 +174,13 @@ async function displayDepartments() {
     console.table(res);
  };
 
-async function displayRoles() { };
+async function displayRoles() { 
+    let res = await io.GetRoles();
+
+    res = res.map(role => ({"Role ID": role.ID, "Title": role.Title, "Salary": role.Salary, "Department ID": role.DepartmentID}));
+
+    console.table(res);
+}
 
 function validateNumberValue(num, min, max) {
     if(num === "" || isNaN(num)){
@@ -199,14 +208,12 @@ async function getDepartmentChoices(){
     return res;
 }
 
-function getRoleChoices(){
-    return [{
-        value: 1,
-        name: "Manager"
-    },{
-        value: 2,
-        name: "Employee"
-    }]
+async function getRoleChoices(){
+    let res = await io.GetRoles();
+
+    res = res.map(role => ({"value": role.ID, "name": role.Title,}));
+
+    return res;
 }
 
 function getManagerChoices() {
