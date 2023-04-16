@@ -1,8 +1,7 @@
 const inq = require("inquirer");
+const io = require("./lib/IO");
 
 let runApp = true;
-
-mainMenu();
 
 async function mainMenu() {
     while (runApp) {
