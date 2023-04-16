@@ -113,14 +113,23 @@ async function updateEmployeePrompt() {
 async function deleteEmployeePrompt() {
     let choices = await getEmployeeChocies();
 
-    let ans = await inq
+    let ans = await resuableDeletePrompt("Employee", choices);
+
+    if (ans.confirm === "Yes") {
+        let res = await io.DeleteEmployee(ans.id);
+        console.log(`Deleted ${res} rows(s)`);
+    }
+}
+
+async function resuableDeletePrompt(prompt, choices) {
+    return await inq
         .prompt([
             {
-                name: "employee",
-                message: "Select Employee to delete:",
+                name: "id",
+                message: `Select ${prompt} to delete: `,
                 type: "list",
                 choices: choices
-            }, 
+            },
             {
                 name: "confirm",
                 message: "Confirm Delete; this cannot be undone?",
@@ -128,11 +137,6 @@ async function deleteEmployeePrompt() {
                 choices: ["No", "Yes"]
             }
         ]);
-
-    if (ans.confirm === "Yes") {
-        let res = await io.DeleteEmployee(ans.employee);
-        console.log(`Deleted ${res} rows(s)`);
-    }
 }
 
 async function addEmployeePrompt() {
@@ -241,6 +245,17 @@ async function addRolePrompt() {
 
     console.log(`New role ${ans.title} in the ${ans.department} with a salary of ${ans.salary} with an ID of ${newID}.`);
 };
+
+async function deleteRolePrompt(){
+    let roles = await getRoleChoices();
+
+    let ans = await resuableDeletePrompt("Role", roles);
+
+    if (ans.confirm === "Yes") {
+        let res = await io.DeleteRole(ans.id);
+        console.log(`Deleted ${res} row(s)`);
+    }
+}
 
 async function updateRolePrompt(){
     let roles = await io.GetRoles();
