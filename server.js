@@ -1,5 +1,6 @@
 const inq = require("inquirer");
 const io = require("./lib/IO");
+require("console.table");
 
 let runApp = true;
 
@@ -53,15 +54,15 @@ async function mainMenu() {
         } else {
             switch (ans.recordType) {
                 case "Employee":
-                    displayEmployees()
+                    await displayEmployees()
                     break;
 
                 case "Department":
-                    displayDepartments();
+                    await displayDepartments();
                     break;
 
                 case "Role":
-                    displayRoles();
+                    await displayRoles();
                     break;
 
                 default:
@@ -74,8 +75,8 @@ async function mainMenu() {
 }
 
 async function addEmployeePrompt() {
-    let roles = getRoleChoices();
-    let managers = getManagerChoices();
+    let roles = await getRoleChoices();
+    let managers = await getManagerChoices();
 
     let ans = await inq
         .prompt([
@@ -111,7 +112,7 @@ async function addEmployeePrompt() {
 
     console.log(`New Employee Created: ${ans.firstName} ${ans.lastName} in ${ans.role} role reporting to ${ans.manager}`)
  };
- 
+
 async function addDepartmentPrompt() { 
     let ans = await inq
         .prompt([
@@ -132,7 +133,7 @@ async function addDepartmentPrompt() {
 };
 
 async function addRole() {
-    let departments = getDepartmentChoices();
+    let departments = await getDepartmentChoices();
     let ans = await inq
         .prompt([
             {
@@ -160,9 +161,17 @@ async function addRole() {
 
     console.log(`New role ${ans.title} in the ${ans.department} with a salary of ${ans.salary}.`)
  };
-function displayEmployees() { };
-function displayDepartments() { };
-function displayRoles() { };
+async function displayEmployees() { };
+
+async function displayDepartments() {
+    let res = await io.GetDepartments();
+
+    res = res.map(dep => ({"Department ID": dep.ID, "Department Name": dep.Name}))
+
+    console.table(res);
+ };
+
+async function displayRoles() { };
 
 function validateNumberValue(num, min, max) {
     if(num === "" || isNaN(num)){
@@ -182,14 +191,12 @@ function validateFieldLength(res, min, max) {
     }
 };
 
-function getDepartmentChoices(){
-    return [{
-        value: 1,
-        name: "IT"
-    },{
-        value: 2,
-        name: "Trading"
-    }]
+async function getDepartmentChoices(){
+    let res = await io.GetDepartments();
+
+    res = res.map(dep => ({"value": dep.ID, "name": dep.Name}))
+   
+    return res;
 }
 
 function getRoleChoices(){
