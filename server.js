@@ -223,6 +223,17 @@ async function updateDepartmentPrompt() {
     console.log(`New Department ${ans.name} with ID: ${newID} created.`);
 };
 
+async function deleteDepartmentPrompt(){
+    let dept = await getDepartmentChoices();
+
+    let ans = await resuableDeletePrompt("Department", dept);
+
+    if (ans.confirm === "Yes"){
+        let res = await io.DeleteDepartment(ans.id);
+        console.log(`Deleted ${res} row(s)`);
+    }
+}
+
 async function resuableDepartmentPrompt(currName = null) {
     return await inq
         .prompt([
